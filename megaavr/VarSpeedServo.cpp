@@ -121,6 +121,28 @@ void ServoHandler(int timer)
     currentServoIndex[timer]++;
 
     if (SERVO_INDEX(timer, currentServoIndex[timer]) < ServoCount && currentServoIndex[timer] < SERVOS_PER_TIMER) {
+           
+            // Extension for Speed?
+          if (SERVO(timer,Channel[timer]).speed) {
+            // Increment ticks by speed until we reach the target.
+            // When the target is reached, speed is set to 0 to disable that code.
+            if (SERVO(timer,Channel[timer]).target > SERVO(timer,Channel[timer]).ticks) {
+              SERVO(timer,Channel[timer]).ticks += SERVO(timer,Channel[timer]).speed;
+              if (SERVO(timer,Channel[timer]).target <= SERVO(timer,Channel[timer]).ticks) {
+                SERVO(timer,Channel[timer]).ticks = SERVO(timer,Channel[timer]).target;
+                SERVO(timer,Channel[timer]).speed = 0;
+              }
+            }
+            else {
+              SERVO(timer,Channel[timer]).ticks -= SERVO(timer,Channel[timer]).speed;
+              if (SERVO(timer,Channel[timer]).target >= SERVO(timer,Channel[timer]).ticks) {
+                SERVO(timer,Channel[timer]).ticks = SERVO(timer,Channel[timer]).target;
+                SERVO(timer,Channel[timer]).speed = 0;
+              }
+            }
+          }
+          // End of Extension for Speed?    
+
         if (SERVO(timer, currentServoIndex[timer]).Pin.isActive == true) {   // check if activated
             digitalWrite(SERVO(timer, currentServoIndex[timer]).Pin.nbr, HIGH);   // it's an active channel so pulse it high
         }

@@ -1,11 +1,12 @@
 VarSpeedServo.h
 ===============
 
-NOTE: This library is no longer maintained due to hardware dependencies and wide variety of devices to support. As an alternative, I have created [VarSpeedPython](https://github.com/pvanallen/VarSpeedPython), which is a module that can be used on any python platform (e.g. [CircuitPython](https://circuitpython.org/downloads) or [MicroPython](https://micropython.org)) or any implementation of Python. VarSpeedPython is does not have any hardware dependencies, and is designed to be called from within an event loop (and therefore does not block).
+I am attempting to make this lib work with ATMEGA4809 as used in the Nano Every. 
 
-VarSpeedPython provides the ability to move from one position to another over a period of time, and with a specified number of steps, and with an easing function for the move. It can be applied to Servos, LEDs, any other actuator or output that needs to change from one value to another over time.
+This is a WIP - hopefully after some more resreach on timers I can get this to go. 
 
-Please give it a try if your project can run on a Python platform.
+I will not be maintaining any other parts of this Lib.
+=
 
 ----------------------------
 

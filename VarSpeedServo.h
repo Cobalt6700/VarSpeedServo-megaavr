@@ -27,6 +27,12 @@
 */
 
 /*
+  Updated 2013 by Garf (Cobalt),
+  -- included support for MEGAAVR
+  -- Commented out slowmove for compatibility with MEGAAVR (My coding isn't that good)
+  
+  
+  
   Updated 2013 by Philip van Allen (pva),
   -- updated for Arduino 1.0 +
   -- consolidated slowmove into the write command (while keeping slowmove() for compatibility
@@ -60,7 +66,7 @@
    attached()  - Returns true if there is a servo attached.
    detach()    - Stops an attached servos from pulsing its i/o pin.
 
-   slowmove(value, speed) - The same as write(value, speed), retained for compatibility with Korman's version
+   slowmove - Commented out for compatibility with MEGAAVR (My coding isn't that good)
 
    stop() - stops the servo at the current position
 
@@ -84,32 +90,13 @@
  *
  */
 
-// Say which 16 bit timers can be used and in what order
-#if defined(__AVR_ATmega1280__)  || defined(__AVR_ATmega2560__)
-#define _useTimer5
-#define _useTimer1
-#define _useTimer3
-#define _useTimer4
-typedef enum { _timer5, _timer1, _timer3, _timer4, _Nbr_16timers } timer16_Sequence_t ;
-
-#elif defined(__AVR_ATmega32U4__)
-#define _useTimer3
-#define _useTimer1
-typedef enum { _timer3, _timer1, _Nbr_16timers } timer16_Sequence_t ;
-
-#elif defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__)
-#define _useTimer3
-#define _useTimer1
-typedef enum { _timer3, _timer1, _Nbr_16timers } timer16_Sequence_t ;
-
-#elif defined(__AVR_ATmega128__) ||defined(__AVR_ATmega1281__)||defined(__AVR_ATmega2561__)
-#define _useTimer3
-#define _useTimer1
-typedef enum { _timer3, _timer1, _Nbr_16timers } timer16_Sequence_t ;
-
-#else  // everything else
-#define _useTimer1
-typedef enum { _timer1, _Nbr_16timers } timer16_Sequence_t ;
+// Architecture specific include
+#if defined(ARDUINO_ARCH_AVR)
+#include "avr/VarSpeedServoTimers.h"
+#elif defined(ARDUINO_ARCH_MEGAAVR)
+#include "megaavr/VarSpeedServoTimers.h"
+#else
+#error "This library only supports boards with an AVR, or MEGAAVR processor."
 #endif
 
 #define VarSpeedServo_VERSION           2      // software version of this library
@@ -132,18 +119,22 @@ typedef struct  {
   uint8_t isActive   :1 ;             // true if this channel is enabled, pin not pulsed if false
 } ServoPin_t   ;
 
+
 typedef struct {
   ServoPin_t Pin;
   unsigned int ticks;
 	unsigned int value;			// Extension for external wait (Gill)
+  //#if defined(ARDUINO_ARCH_AVR)
 	unsigned int target;			// Extension for slowmove
 	uint8_t speed;					// Extension for slowmove
+ // #endif
 } servo_t;
 
 typedef struct {
   uint8_t position;
   uint8_t speed;
 } servoSequencePoint;
+
 
 class VarSpeedServo
 {
@@ -159,7 +150,9 @@ public:
           // because of the mechanical limits of the servo.
   void write(int value, uint8_t speed, bool wait); // wait parameter causes call to block until move completes
   void writeMicroseconds(int value); // Write pulse width in microseconds
+  #if defined(ARDUINO_ARCH_AVR)
   void slowmove(int value, uint8_t speed);
+  #endif
   void stop(); // stop the servo where it is
 
   int read();                        // returns current pulse width as an angle between 0 and 180 degrees

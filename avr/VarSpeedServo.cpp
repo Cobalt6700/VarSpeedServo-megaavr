@@ -71,7 +71,7 @@
 #include <avr/interrupt.h>
 #include <Arduino.h> // updated from WProgram.h to Arduino.h for Arduino 1.0+, pva
 
-#include "VarSpeedServo.h"
+#include <VarSpeedServo.h>
 
 #define usToTicks(_us)    (( clockCyclesPerMicrosecond()* _us) / 8)     // converts microseconds to tick (assumes prescale of 8)  // 12 Aug 2009
 #define ticksToUs(_ticks) (( (unsigned)_ticks * 8)/ clockCyclesPerMicrosecond() ) // converts from ticks back to microseconds

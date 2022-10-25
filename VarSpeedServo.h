@@ -76,8 +76,8 @@
 
  */
 
-#ifndef VarSpeedServo_h
-#define VarSpeedServo_h
+#ifndef VarSpeedServo__h
+#define VarSpeedServo__h
 
 #include <inttypes.h>
 

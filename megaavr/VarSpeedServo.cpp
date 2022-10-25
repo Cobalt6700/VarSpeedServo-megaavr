@@ -69,7 +69,7 @@
  */
 
 #include <Arduino.h> // updated from WProgram.h to Arduino.h for Arduino 1.0+, pva
-#include "VarSpeedServo.h"
+#include <VarSpeedServo.h>
 
 
 #define usToTicks(_us)    ((clockCyclesPerMicrosecond() / 16 * _us) / 4)                 // converts microseconds to tick
@@ -123,21 +123,21 @@ void ServoHandler(int timer)
     if (SERVO_INDEX(timer, currentServoIndex[timer]) < ServoCount && currentServoIndex[timer] < SERVOS_PER_TIMER) {
            
             // Extension for Speed?
-          if (SERVO(timer,Channel[timer]).speed) {
+          if (SERVO(timer,currentServoIndex[timer]).speed) {
             // Increment ticks by speed until we reach the target.
             // When the target is reached, speed is set to 0 to disable that code.
-            if (SERVO(timer,Channel[timer]).target > SERVO(timer,Channel[timer]).ticks) {
-              SERVO(timer,Channel[timer]).ticks += SERVO(timer,Channel[timer]).speed;
-              if (SERVO(timer,Channel[timer]).target <= SERVO(timer,Channel[timer]).ticks) {
-                SERVO(timer,Channel[timer]).ticks = SERVO(timer,Channel[timer]).target;
-                SERVO(timer,Channel[timer]).speed = 0;
+            if (SERVO(timer,currentServoIndex[timer]).target > SERVO(timer,currentServoIndex[timer]).ticks) {
+              SERVO(timer,currentServoIndex[timer]).ticks += SERVO(timer,currentServoIndex[timer]).speed;
+              if (SERVO(timer,currentServoIndex[timer]).target <= SERVO(timer,currentServoIndex[timer]).ticks) {
+                SERVO(timer,currentServoIndex[timer]).ticks = SERVO(timer,currentServoIndex[timer]).target;
+                SERVO(timer,currentServoIndex[timer]).speed = 0;
               }
             }
             else {
-              SERVO(timer,Channel[timer]).ticks -= SERVO(timer,Channel[timer]).speed;
-              if (SERVO(timer,Channel[timer]).target >= SERVO(timer,Channel[timer]).ticks) {
-                SERVO(timer,Channel[timer]).ticks = SERVO(timer,Channel[timer]).target;
-                SERVO(timer,Channel[timer]).speed = 0;
+              SERVO(timer,currentServoIndex[timer]).ticks -= SERVO(timer,currentServoIndex[timer]).speed;
+              if (SERVO(timer,currentServoIndex[timer]).target >= SERVO(timer,currentServoIndex[timer]).ticks) {
+                SERVO(timer,currentServoIndex[timer]).ticks = SERVO(timer,currentServoIndex[timer]).target;
+                SERVO(timer,currentServoIndex[timer]).speed = 0;
               }
             }
           }
@@ -365,12 +365,12 @@ void VarSpeedServo::write(int value, uint8_t speed, bool wait) {
 void VarSpeedServo::stop() {
   write(read());
 }
-
+/*
 void VarSpeedServo::slowmove(int value, uint8_t speed) {
   // legacy function to support original version of VarSpeedServo
   write(value, speed);
 }
-
+*/
 // End of Extension for slowmove
 
 

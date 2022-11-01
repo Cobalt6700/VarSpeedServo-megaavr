@@ -373,10 +373,10 @@ void VarSpeedServo::writeMicroseconds(int value)
   	value -= TRIM_DURATION;
     value = usToTicks(value);  // convert to ticks after compensating for interrupt overhead - 12 Aug 2009
 
-    //uint8_t oldSREG = SREG;
-    //cli();
+    uint8_t oldSREG = SREG;
+    cli();
     servos[channel].ticks = value;
-    //SREG = oldSREG;
+    SREG = oldSREG;
 
 	// Extension for slowmove
 	// Disable slowmove logic.
@@ -421,11 +421,11 @@ void VarSpeedServo::write(int value, uint8_t speed) {
 			value = usToTicks(value);  // convert to ticks after compensating for interrupt overhead - 12 Aug 2009
 
 			// Set speed and direction
-			//uint8_t oldSREG = SREG;
-			//cli();
+			uint8_t oldSREG = SREG;
+			cli();
 			servos[channel].target = value;
 			servos[channel].speed = speed;
-			//SREG = oldSREG;
+			SREG = oldSREG;
 		}
 	}
 	else {
@@ -453,14 +453,14 @@ void VarSpeedServo::stop() {
   write(read());
 }
 
-/*
+
 void VarSpeedServo::slowmove(int value, uint8_t speed) {
   // legacy function to support original version of VarSpeedServo
   write(value, speed);
 }
 
 // End of Extension for slowmove
-*/
+
 
 int VarSpeedServo::read() // return the value as degrees
 {

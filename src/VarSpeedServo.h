@@ -27,7 +27,7 @@
 */
 
 /*
-  Updated 2013 by Garf (Cobalt),
+  Updated 2022 by Garf (Cobalt),
   -- included support for MEGAAVR
   -- Commented out slowmove for compatibility with MEGAAVR (My coding isn't that good)
   
@@ -95,6 +95,7 @@
 #include "avr/VarSpeedServoTimers.h"
 #elif defined(ARDUINO_ARCH_MEGAAVR)
 #include "megaavr/VarSpeedServoTimers.h"
+#warning "VarSpeedServo MEGAAVR library"
 #else
 #error "This library only supports boards with an AVR, or MEGAAVR processor."
 #endif
@@ -150,9 +151,9 @@ public:
           // because of the mechanical limits of the servo.
   void write(int value, uint8_t speed, bool wait); // wait parameter causes call to block until move completes
   void writeMicroseconds(int value); // Write pulse width in microseconds
-  #if defined(ARDUINO_ARCH_AVR)
+  //#if defined(ARDUINO_ARCH_AVR)
   void slowmove(int value, uint8_t speed);
-  #endif
+  //#endif
   void stop(); // stop the servo where it is
 
   int read();                        // returns current pulse width as an angle between 0 and 180 degrees

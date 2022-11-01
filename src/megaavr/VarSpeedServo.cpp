@@ -74,7 +74,10 @@
 #include <VarSpeedServo.h>
 
 
-#define usToTicks(_us)    ((clockCyclesPerMicrosecond() / 16 * _us) / 4)                 // converts microseconds to tick
+//#define usToTicks(_us)    ((clockCyclesPerMicrosecond() / 16 * _us) / 4)                 // converts microseconds to tick
+#define usToTicks(_us)    (((int32_t)clockCyclesPerMicrosecond() * _us / 16) / 4 )                 // converts microseconds to tick
+// From https://github.com/arduino-libraries/Servo/issues/29#issue-473675083
+
 #define ticksToUs(_ticks) (((unsigned) _ticks * 16) / (clockCyclesPerMicrosecond() / 4))   // converts from ticks back to microseconds
 
 
@@ -265,9 +268,13 @@ void VarSpeedServo::detach()
     finISR(timer);
   }
 }
-
+/*
 void VarSpeedServo::write(int value)
 {
+  // calculate and store the values for the given channel
+  byte channel = this->servoIndex;
+  servos[channel].value = value;
+
   // treat values less than 544 as angles in degrees (valid values in microseconds are handled as microseconds)
   if (value < MIN_PULSE_WIDTH)
   {
@@ -279,6 +286,21 @@ void VarSpeedServo::write(int value)
     value = map(value, 0, 180, SERVO_MIN(), SERVO_MAX());
   }
   writeMicroseconds(value);
+}
+*/
+void VarSpeedServo::write(int value)
+{
+
+  byte channel = this->servoIndex;
+  servos[channel].value = value;
+
+  if(value < MIN_PULSE_WIDTH)
+  {  // treat values less than 544 as angles in degrees (valid values in microseconds are handled as microseconds)
+    // updated to use constrain() instead of if(), pva
+    value = constrain(value, 0, 180);
+    value = map(value, 0, 180, SERVO_MIN(),  SERVO_MAX());
+  }
+  this->writeMicroseconds(value);
 }
 
 void VarSpeedServo::writeMicroseconds(int value)
@@ -296,7 +318,10 @@ void VarSpeedServo::writeMicroseconds(int value)
 
   	value -= TRIM_DURATION;   
     value = usToTicks(value);  // convert to ticks after compensating for interrupt overhead 
+    //uint8_t oldSREG = SREG;
+    //cli();
     servos[channel].ticks = value;
+    //SREG = oldSREG;
   }
 }
 
@@ -367,18 +392,18 @@ void VarSpeedServo::write(int value, uint8_t speed, bool wait) {
 void VarSpeedServo::stop() {
   write(read());
 }
-/*
+
 void VarSpeedServo::slowmove(int value, uint8_t speed) {
   // legacy function to support original version of VarSpeedServo
   write(value, speed);
 }
-*/
+
 // End of Extension for slowmove
 
 
 int VarSpeedServo::read() // return the value as degrees
 {
-  return  map(readMicroseconds()+1, SERVO_MIN(), SERVO_MAX(), 0, 180);
+  return  map(this->readMicroseconds()+1, SERVO_MIN(), SERVO_MAX(), 0, 180);
 }
 
 int VarSpeedServo::readMicroseconds()
